@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "paperlibrary"
+version = "0.1.0"
+description = ""
+authors = ["Lukas Winkler <git@lw1.at>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+django = "^3.1.1"
+ads = "^0.12.3"
+djangoql = "^0.14.0"
+alive-progress = "^1.6.1"
+Wand = "^0.6.3"
+psycopg2 = "^2.8.6"
+django-debug-toolbar = "^3.1.1"
+djangorestframework = "^3.12.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0a5"]
+build-backend = "poetry.core.masonry.api"

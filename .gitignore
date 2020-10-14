@@ -1,0 +1,5 @@
+oldcode/
+.idea
+__pycache__/
+media/
+paperlibrary/secrets.py
