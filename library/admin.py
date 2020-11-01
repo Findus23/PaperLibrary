@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.forms import ModelForm
 from djangoql.admin import DjangoQLSearchMixin
 
-from library.models import Paper, Author, Keyword, PDF
+from library.models import Paper, Author, Keyword, PDF, Note
 
 
 class AddPaperForm(ModelForm):
@@ -28,6 +28,7 @@ class PDFAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Paper, PaperAdmin)
+admin.site.register(Note)
 admin.site.register(Author)
 admin.site.register(Keyword)
 admin.site.register(PDF, PDFAdmin)

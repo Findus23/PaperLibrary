@@ -23,7 +23,7 @@ def fetch_arxiv_pdf(paper: Paper) -> None:
         pdf_file = File(fd)
         pdf_obj = PDF()
         pdf_obj.file.save(f"{paper.arxiv_id}.pdf", pdf_file, save=False)
-        pdf_obj.sha265 = sha256.hexdigest()
+        pdf_obj.sha256 = sha256.hexdigest()
         pdf_obj.type = "arxiv"
         pdf_obj.paper = paper
         pdf_obj.save()
