@@ -14,7 +14,7 @@ class SimplePaperSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Paper
-        fields = ["id", "url", "title", "pdfs", "doi"]
+        fields = ["url", "title", "pdfs", "doi"]
 
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
@@ -26,6 +26,8 @@ class AuthorSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class KeywordSerializer(serializers.HyperlinkedModelSerializer):
+    papers = SimplePaperSerializer(many=True)
+
     class Meta:
         model = Keyword
         fields = "__all__"
