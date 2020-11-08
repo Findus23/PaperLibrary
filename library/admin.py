@@ -1,9 +1,8 @@
 from django.contrib import admin
-# Register your models here.
 from django.forms import ModelForm
 from djangoql.admin import DjangoQLSearchMixin
 
-from library.models import Paper, Author, Keyword, PDF, Note
+from library.models import Paper, Author, Keyword, PDF, Tag
 
 
 class AddPaperForm(ModelForm):
@@ -13,14 +12,27 @@ class AddPaperForm(ModelForm):
 
 
 class PaperAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
-    form = AddPaperForm
+    # form = AddPaperForm
+    fields = ["bibcode", "title", "custom_title", "first_author", "authors", "year",
+              "citation_key",
+              "notes_md", "tags",
+              "doi", "pubdate", "entry_date", "keywords",
+              "publication",
+              "doctype", "arxiv_id", "citation_count", "abstract", "recommended_by",
+              "bibtex"]
     readonly_fields = ["title", "first_author", "authors", "doi", "pubdate", "entry_date", "keywords", "publication",
-                       "doctype", "arxiv_id", "bibtex"]
+                       "doctype", "arxiv_id", "year", "citation_count", "abstract"]
     date_hierarchy = "entry_date"
-    list_filter = ["authors", "publication", "year", "keywords", "doctype"]
-    list_display = ["title", "first_author"]
+    list_filter = ["authors", "publication", "year", "tags", "keywords", "doctype"]
+    list_display = ["title", "first_author", "custom_title"]
     search_fields = ["@abstract"]
+    filter_horizontal = ["tags", "recommended_by"]
     save_on_top = True
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:  # editing an existing object
+            return self.readonly_fields + ['bibcode']
+        return self.readonly_fields
 
 
 class PDFAdmin(admin.ModelAdmin):
@@ -28,9 +40,8 @@ class PDFAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Paper, PaperAdmin)
-admin.site.register(Note)
+# admin.site.register(Note, NoteAdmin)
 admin.site.register(Author)
 admin.site.register(Keyword)
+admin.site.register(Tag)
 admin.site.register(PDF, PDFAdmin)
-
-# Paper.objects.filter(pubdate__month=)

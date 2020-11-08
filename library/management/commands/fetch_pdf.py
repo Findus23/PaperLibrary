@@ -10,4 +10,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for paper in Paper.objects.filter(pdfs=None):
             print(paper)
+            if not paper.arxiv_id:
+                continue
             fetch_arxiv_pdf(paper)

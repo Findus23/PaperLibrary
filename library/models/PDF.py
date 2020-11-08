@@ -3,7 +3,6 @@ import hashlib
 from django.db import models
 
 from library.models import Paper
-from library.utils.pdf import create_preview
 
 
 class PDF(models.Model):
@@ -12,7 +11,7 @@ class PDF(models.Model):
     full_text = models.TextField(blank=True)
     paper = models.ForeignKey(Paper, on_delete=models.PROTECT, related_name="pdfs")
     type = models.CharField(max_length=100, default="other")
-    preview = models.FileField(upload_to="previews", null=True)
+    preview = models.FileField(upload_to="previews", null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):

@@ -1,27 +1,44 @@
+import re
+
 import ads
 from ads.search import Article
+from django.core.exceptions import ValidationError
 from django.db import models
 
-from library.models import Author, Keyword, Publication, DocType
+from library.models import Author, Keyword, Publication, DocType, Tag
 from paperlibrary.settings import ADS_AUTH_TOKEN
+
+
+def valid_bibtex_key(key: str) -> None:
+    if " " in key:
+        raise ValidationError("key is not allowed to contain spaces")
+    for character in ["\"#'(),={}%"]:
+        if character in key:
+            raise ValidationError(f"key is not allowed to contain {character}")
 
 
 class Paper(models.Model):
     title = models.CharField(max_length=1000)
     abstract = models.TextField()
-    doi = models.CharField(unique=True, max_length=50,null=True)
-    bibtex = models.TextField()
+    doi = models.CharField(unique=True, max_length=50, null=True)
+    bibtex = models.TextField(blank=True)
     first_author = models.ForeignKey(Author, on_delete=models.RESTRICT, related_name="first_author_papers")
     authors = models.ManyToManyField(Author, related_name="papers")
     publication = models.ForeignKey(Publication, on_delete=models.CASCADE)
     doctype = models.ForeignKey(DocType, on_delete=models.CASCADE)
-    arxiv_id = models.CharField(unique=True, max_length=10)
+    arxiv_id = models.CharField(unique=True, max_length=10, blank=True, null=True)
     bibcode = models.CharField(unique=True, max_length=50)
     year = models.IntegerField()
     pubdate = models.DateField()
     entry_date = models.DateField()
     citation_count = models.IntegerField()
     keywords = models.ManyToManyField(Keyword, related_name="papers")
+    custom_title = models.CharField(max_length=1000, blank=True)
+    notes_md = models.TextField(blank=True)
+    notes_html = models.TextField(editable=False, blank=True)  # TODO: support HTML
+    recommended_by = models.ManyToManyField(Author, related_name="recommendations", blank=True)
+    tags = models.ManyToManyField(Tag, related_name="notes", blank=True)
+    citation_key = models.CharField(max_length=50, unique=True, blank=True, null=True, validators=[valid_bibtex_key])
 
     def __str__(self):
         return self.title
@@ -43,8 +60,11 @@ class Paper(models.Model):
         return f"https://ui.adsabs.harvard.edu/abs/{self.bibcode}/abstract"
 
     def save(self, *args, **kwargs):
-        # if self.id:
-        #     return super(Paper, self).save(*args, **kwargs)
+        if self.citation_key:
+            regex = r"(@\w+{)(\S+),"
+            self.bibtex = re.sub(regex, f"\\1{self.citation_key},", self.bibtex, 1)
+        if self.id:
+            return super(Paper, self).save(*args, **kwargs)
 
         ads.config.token = ADS_AUTH_TOKEN
         cols = [
@@ -85,6 +105,6 @@ class Paper(models.Model):
         for kw in zip(paper.keyword, paper._get_field("keyword_schema")):
             keyword_name, keyword_schema = kw
             keyword, created = Keyword.objects.get_or_create(
-                name__iexact=keyword_name, schema=keyword_schema, defaults={"name": keyword_name}
+                name__iexact=keyword_name, kw_schema=keyword_schema, defaults={"name": keyword_name}
             )
             self.keywords.add(keyword)

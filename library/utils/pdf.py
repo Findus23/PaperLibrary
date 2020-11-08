@@ -11,6 +11,8 @@ from library.utils.http import requests_session
 
 
 def fetch_arxiv_pdf(paper: Paper) -> None:
+    if not paper.arxiv_id:
+        raise ValueError("no arxiv id given")
     with TemporaryFile("rb+") as fd:
         print(paper.arxiv_pdf_url)
         r = requests_session.get(paper.arxiv_pdf_url)

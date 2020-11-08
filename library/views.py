@@ -1,6 +1,7 @@
 # Create your views here.
-
+from django.http import HttpResponse
 from rest_framework import viewsets, permissions
+from rest_framework.decorators import api_view
 
 from library.models import Paper, Author, Keyword, PDF
 from library.serializers import PaperSerializer, AuthorSerializer, PDFSerializer, KeywordSerializer
@@ -31,3 +32,13 @@ class PDFViewSet(viewsets.ModelViewSet):
     queryset = PDF.objects.all()
     serializer_class = PDFSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+@api_view(['GET'])
+def bibtex(request):
+    code = "% Encoding: UTF-8\n\n"
+    for paper in Paper.objects.all().order_by("citation_key"):
+        code += paper.bibtex + "\n\n"
+
+    code += "@Comment{jabref-meta: databaseType:biblatex;}\n"
+    return HttpResponse(code, content_type="text/plain")

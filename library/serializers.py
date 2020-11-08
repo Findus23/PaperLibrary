@@ -1,29 +1,22 @@
 from rest_framework import serializers
 
-from library.models import Paper, Author, Keyword, PDF, DocType, Publication, Note
+from library.models import Paper, Author, Keyword, PDF, DocType, Publication, Tag
 
 
 class PDFSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PDF
-        fields = ["id", "url", "file", "sha256", "type", "preview","updated_at"]
-
-
-class NoteSerializer(serializers.ModelSerializer):
-    recommended_by = serializers.SlugRelatedField("name", many=True, queryset=Author.objects.all())
-
-    class Meta:
-        model = Note
-        fields = "__all__"
+        fields = ["id", "url", "file", "sha256", "type", "preview", "updated_at"]
 
 
 class SimplePaperSerializer(serializers.HyperlinkedModelSerializer):
     pdfs = PDFSerializer(many=True)
-    note = NoteSerializer()
+
+    # note = NoteSerializer()
 
     class Meta:
         model = Paper
-        fields = ["url", "title", "pdfs", "doi", "note"]
+        fields = ["url", "title", "custom_title", "pdfs", "doi"]
 
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
@@ -48,7 +41,8 @@ class PaperSerializer(serializers.HyperlinkedModelSerializer):
     first_author = serializers.SlugRelatedField("name", queryset=Author.objects.all())
     publication = serializers.SlugRelatedField("name", queryset=Publication.objects.all())
     doctype = serializers.SlugRelatedField("name", queryset=DocType.objects.all())
-    note = NoteSerializer()
+    tags = serializers.SlugRelatedField("name", many=True, queryset=Tag.objects.all())
+    recommended_by = serializers.SlugRelatedField("name", many=True, queryset=Author.objects.all())
     pdfs = PDFSerializer(many=True)
 
     class Meta:
