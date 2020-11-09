@@ -2,13 +2,19 @@ from django.contrib import admin
 from django.forms import ModelForm
 from djangoql.admin import DjangoQLSearchMixin
 
-from library.models import Paper, Author, Keyword, PDF, Tag
+from library.models import Paper, Author, Keyword, PDF, Tag, AuthorAlias
 
 
 class AddPaperForm(ModelForm):
     class Meta:
         model = Paper
         fields = ['bibcode']
+
+
+class PDFInlineAdmin(admin.TabularInline):
+    model = PDF
+    fields = ["file", "type"]
+    extra = 0
 
 
 class PaperAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
@@ -28,6 +34,7 @@ class PaperAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
     search_fields = ["@abstract"]
     filter_horizontal = ["tags", "recommended_by"]
     save_on_top = True
+    inlines = [PDFInlineAdmin]
 
     def get_readonly_fields(self, request, obj=None):
         if obj:  # editing an existing object
@@ -42,6 +49,7 @@ class PDFAdmin(admin.ModelAdmin):
 admin.site.register(Paper, PaperAdmin)
 # admin.site.register(Note, NoteAdmin)
 admin.site.register(Author)
+admin.site.register(AuthorAlias)
 admin.site.register(Keyword)
 admin.site.register(Tag)
 admin.site.register(PDF, PDFAdmin)

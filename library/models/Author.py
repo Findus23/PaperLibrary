@@ -9,3 +9,7 @@ class Author(models.Model):
 
     def __str__(self):
         return self.pretty_name if self.pretty_name else self.name
+
+    class Meta:
+        ordering = ["name"]
+

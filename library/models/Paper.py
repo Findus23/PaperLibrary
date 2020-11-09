@@ -5,8 +5,18 @@ from ads.search import Article
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from library.models import Author, Keyword, Publication, DocType, Tag
+from library.models import Author, Keyword, Publication, DocType, Tag, AuthorAlias
 from paperlibrary.settings import ADS_AUTH_TOKEN
+
+
+def get_or_create_author(name: str):
+    try:
+        return Author.objects.get(name=name)
+    except Author.DoesNotExist:
+        try:
+            return AuthorAlias.objects.get(name=name).author
+        except AuthorAlias.DoesNotExist:
+            return Author.objects.create(name=name)
 
 
 def valid_bibtex_key(key: str) -> None:
@@ -83,7 +93,7 @@ class Paper(models.Model):
         self.entry_date = paper._get_field("entry_date").replace("T00:00:00Z", "")
         self.citation_count = int(paper.citation_count)
         self.doctype, _ = DocType.objects.get_or_create(name=paper.doctype)
-        self.first_author, _ = Author.objects.get_or_create(name=paper.first_author)
+        self.first_author = get_or_create_author(name=paper.first_author)
 
         self.year = paper.year
         self.pubdate = paper.pubdate.replace("-00", "-01").replace("T", "")
@@ -99,7 +109,7 @@ class Paper(models.Model):
 
         super(Paper, self).save(*args, **kwargs)
         for author_name in paper.author:
-            author, created = Author.objects.get_or_create(name=author_name)
+            author = get_or_create_author(name=author_name)
             self.authors.add(author)
 
         for kw in zip(paper.keyword, paper._get_field("keyword_schema")):
