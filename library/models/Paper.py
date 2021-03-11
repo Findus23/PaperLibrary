@@ -50,6 +50,9 @@ class Paper(models.Model):
     tags = models.ManyToManyField(Tag, related_name="notes", blank=True)
     citation_key = models.CharField(max_length=50, unique=True, blank=True, null=True, validators=[valid_bibtex_key])
 
+    class Meta:
+        ordering = ["title"]
+
     def __str__(self):
         return self.title
 
