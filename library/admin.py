@@ -32,14 +32,16 @@ class PaperAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
     list_filter = ["authors", "publication", "year", "tags", "keywords", "doctype"]
     list_display = ["title", "first_author", "custom_title"]
     search_fields = ["@abstract"]
-    filter_horizontal = ["tags", "recommended_by"]
+    filter_horizontal = ["tags", "recommended_by", "keywords", "authors"]
     save_on_top = True
     inlines = [PDFInlineAdmin]
 
     def get_readonly_fields(self, request, obj=None):
-        if obj:  # editing an existing object
-            return self.readonly_fields + ['bibcode']
-        return self.readonly_fields
+        if not obj:  # editing an existing object
+            return self.readonly_fields
+        if not obj.bibcode:
+            return []
+        return self.readonly_fields + ['bibcode']
 
 
 class PDFAdmin(admin.ModelAdmin):

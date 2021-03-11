@@ -30,6 +30,7 @@ def valid_bibtex_key(key: str) -> None:
 class Paper(models.Model):
     title = models.CharField(max_length=1000)
     abstract = models.TextField()
+    bibcode = models.CharField(unique=True, max_length=50, null=True, blank=True)
     doi = models.CharField(unique=True, max_length=50, null=True)
     bibtex = models.TextField(blank=True)
     first_author = models.ForeignKey(Author, on_delete=models.RESTRICT, related_name="first_author_papers")
@@ -37,11 +38,10 @@ class Paper(models.Model):
     publication = models.ForeignKey(Publication, on_delete=models.CASCADE)
     doctype = models.ForeignKey(DocType, on_delete=models.CASCADE)
     arxiv_id = models.CharField(unique=True, max_length=10, blank=True, null=True)
-    bibcode = models.CharField(unique=True, max_length=50)
     year = models.IntegerField()
     pubdate = models.DateField()
     entry_date = models.DateField()
-    citation_count = models.IntegerField()
+    citation_count = models.IntegerField(null=True, blank=True)
     keywords = models.ManyToManyField(Keyword, related_name="papers")
     custom_title = models.CharField(max_length=1000, blank=True)
     notes_md = models.TextField(blank=True)
@@ -74,6 +74,17 @@ class Paper(models.Model):
             regex = r"(@\w+{)(\S+),"
             self.bibtex = re.sub(regex, f"\\1{self.citation_key},", self.bibtex, 1)
         if self.id:
+            return super(Paper, self).save(*args, **kwargs)
+        if not self.bibcode:
+            otherpublication, _ = Publication.objects.get_or_create(name="other")
+            self.publication = otherpublication
+            otherdoctype, _ = DocType.objects.get_or_create(name="other")
+            self.doctype = otherdoctype
+            self.year = 2020
+            self.title = self.custom_title or ""
+            self.pubdate = self.entry_date = "2020-01-01"
+            otherauthor, _ = Author.objects.get_or_create(name="unknown")
+            self.first_author = otherauthor
             return super(Paper, self).save(*args, **kwargs)
 
         ads.config.token = ADS_AUTH_TOKEN
