@@ -17,7 +17,11 @@ def fetch_arxiv_pdf(paper: Paper) -> None:
         print(paper.arxiv_pdf_url)
         r = requests_session.get(paper.arxiv_pdf_url)
         sha256 = hashlib.sha256()
-        with alive_bar(int(r.headers["Content-Length"])) as bar:
+        if "Content-Length" in r.headers:
+            size = int(r.headers["Content-Length"])
+        else:
+            size = None
+        with alive_bar(size) as bar:
             for chunk in r.iter_content(chunk_size=1):
                 fd.write(chunk)
                 sha256.update(chunk)
