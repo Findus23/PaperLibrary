@@ -100,6 +100,20 @@ python-versions = ">=3.5"
 django = ">=2.2"
 
 [[package]]
+name = "gunicorn"
+version = "20.0.4"
+description = "WSGI HTTP Server for UNIX"
+category = "main"
+optional = false
+python-versions = ">=3.4"
+
+[package.extras]
+eventlet = ["eventlet (>=0.9.7)"]
+gevent = ["gevent (>=0.13)"]
+setproctitle = ["setproctitle"]
+tornado = ["tornado (>=0.2)"]
+
+[[package]]
 name = "httpretty"
 version = "0.8.10"
 description = "HTTP client mock for Python"
@@ -226,7 +240,7 @@ watchdog = ["watchdog"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "7d0913be4faf7c68a468021465c2fb273d039113c097143d4ecf9645d88fdb53"
+content-hash = "9c7e3fa7cb28ec6a7bd4f6a588c6791a9c18332c88c3a30b6c7aaf2b14c92933"
 
 [metadata.files]
 ads = [
@@ -262,6 +276,10 @@ djangoql = [
 djangorestframework = [
     {file = "djangorestframework-3.12.2-py3-none-any.whl", hash = "sha256:0209bafcb7b5010fdfec784034f059d512256424de2a0f084cb82b096d6dd6a7"},
     {file = "djangorestframework-3.12.2.tar.gz", hash = "sha256:0898182b4737a7b584a2c73735d89816343369f259fea932d90dc78e35d8ac33"},
+]
+gunicorn = [
+    {file = "gunicorn-20.0.4-py2.py3-none-any.whl", hash = "sha256:cd4a810dd51bf497552cf3f863b575dabd73d6ad6a91075b65936b151cbf4f9c"},
+    {file = "gunicorn-20.0.4.tar.gz", hash = "sha256:1904bb2b8a43658807108d59c3f3d56c2b6121a701161de0ddf9ad140073c626"},
 ]
 httpretty = [
     {file = "httpretty-0.8.10-py2-none-any.whl", hash = "sha256:77cbd62e20cb47f1c66125531aedcb80c3141dc10c5b24779389693cfc8bc3a2"},
