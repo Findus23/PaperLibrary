@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'djangoql',
     'debug_toolbar',
     'rest_framework',
-    "rest_framework.authtoken"
+    "rest_framework.authtoken",
+    'django_celery_results'
 ]
 
 MIDDLEWARE = [
@@ -123,6 +124,12 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
+
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_WORKER_CONCURRENCY = 1
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True

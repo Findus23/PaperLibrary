@@ -1,6 +1,7 @@
 import re
 
 import ads
+import celery
 from ads.search import Article
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -95,14 +96,15 @@ class Paper(models.Model):
             "title", "author", "first_author", "year", "bibcode", "id", "pubdate", "doi",
             "identifier", "pub", "citation_count", "abstract", "bibtex", "doctype", "keyword"
         ]
-        # ads.ExportQuery
+
         print(self.bibcode)
         papers = ads.SearchQuery(bibcode=self.bibcode, fl=cols)
         paper: Article = next(papers)
         self.title = paper.title[0]
         self.publication, _ = Publication.objects.get_or_create(name=paper.pub)
         self.abstract = paper.abstract
-        self.bibtex = paper.bibtex
+        bibtex_query = ads.ExportQuery(self.bibcode)
+        self.bibtex = bibtex_query.execute()
         self.year = int(paper.year)
         self.entry_date = paper._get_field("entry_date").replace("T00:00:00Z", "")
         self.citation_count = int(paper.citation_count)
@@ -132,3 +134,4 @@ class Paper(models.Model):
                 name__iexact=keyword_name, kw_schema=keyword_schema, defaults={"name": keyword_name}
             )
             self.keywords.add(keyword)
+        celery.current_app.send_task('library.tasks.fetch_pdfs')

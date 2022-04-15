@@ -6,16 +6,19 @@ authors = ["Lukas Winkler <git@lw1.at>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-django = "^3.1.1"
+django = "^4.0.0"
 ads = "^0.12.3"
-djangoql = "^0.14.0"
-alive-progress = "^1.6.1"
+djangoql = "^0.17.0"
+alive-progress = "^2.4.1"
 Wand = "^0.6.3"
 psycopg2 = "^2.8.6"
 django-debug-toolbar = "^3.1.1"
 djangorestframework = "^3.12.1"
 gunicorn = "^20.0.4"
 setproctitle = "^1.2.2"
+celery = "^5.2.6"
+django-celery-results = "^2.3.0"
+redis = "^4.2.2"
 
 [tool.poetry.dev-dependencies]
 
