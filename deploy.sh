@@ -11,6 +11,5 @@ git pull
 #$manage scss
 $manage collectstatic --noinput
 $manage migrate
-$manage clearcache
 
 sudo systemctl reload paperlibrary.service
