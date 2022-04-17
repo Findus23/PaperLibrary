@@ -13,3 +13,4 @@ $manage collectstatic --noinput
 $manage migrate
 
 sudo systemctl reload paperlibrary.service
+sudo systemctl restart paperlibrary-worker.service
