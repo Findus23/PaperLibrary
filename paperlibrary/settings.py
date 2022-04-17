@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'rest_framework',
     "rest_framework.authtoken",
-    'django_celery_results'
+    'django_rq'
 ]
 
 MIDDLEWARE = [
@@ -125,11 +125,12 @@ REST_FRAMEWORK = {
     ]
 }
 
-CELERY_TIMEZONE = TIME_ZONE
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_CACHE_BACKEND = 'django-cache'
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_WORKER_CONCURRENCY = 1
+RQ_QUEUES = {
+    'default': {
+        'URL': "redis://localhost:6379/0",
+        'DEFAULT_TIMEOUT': 360,
+    }
+}
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
@@ -163,4 +164,4 @@ if not DEBUG:
             "LOCATION": redis_url,
         }
     }
-    CELERY_BROKER_URL = redis_url
+    RQ_QUEUES["default"]["URL"] = redis_url

@@ -1,7 +1,7 @@
 import re
 
 import ads
-import celery
+import django_rq
 from ads.search import Article
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -134,4 +134,5 @@ class Paper(models.Model):
                 name__iexact=keyword_name, kw_schema=keyword_schema, defaults={"name": keyword_name}
             )
             self.keywords.add(keyword)
-        celery.current_app.send_task('library.tasks.fetch_pdfs')
+        queue = django_rq.get_queue()
+        queue.enqueue("library.tasks.fetch_pdfs")

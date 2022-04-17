@@ -16,5 +16,8 @@ urlpatterns = [
     path('api/bibtex/', views.bibtex),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('api-token-auth/', obtain_auth_token)
+    path('api-token-auth/', obtain_auth_token),
+    path('django-rq/', include('django_rq.urls'))
+
 ]
+
