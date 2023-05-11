@@ -30,8 +30,18 @@ def valid_bibtex_key(key: str) -> None:
 
 def merge_fields(*args):
     for value in args:
-        if value != "-":
+        if value != "-" and value is not None:
             return value
+
+
+def fix_none_for_zip(*args):
+    fixed_args = []
+    length = len(args[0])
+    for a in args:
+        if a is None:
+            a = [None] * length
+        fixed_args.append(a)
+    return fixed_args
 
 
 class Paper(models.Model):
@@ -89,7 +99,7 @@ class Paper(models.Model):
         if self.id:
             papers = ads.SearchQuery(bibcode=self.bibcode, fl=["_version_"])
             paper: Article = next(papers)
-            if self.ads_version==paper._raw["_version_"]:
+            if self.ads_version == paper._raw["_version_"]:
                 return super(Paper, self).save(*args, **kwargs)
 
         if not self.bibcode:
@@ -107,7 +117,7 @@ class Paper(models.Model):
         cols = [
             "title", "author", "first_author", "year", "bibcode", "id", "pubdate", "doi",
             "identifier", "pub", "citation_count", "abstract", "bibtex", "doctype", "keyword",
-            "orcid_pub", "orcid_user", "orcid_other", "aff", "_version_", "arxiv_class","entry_date",
+            "orcid_pub", "orcid_user", "orcid_other", "aff", "_version_", "arxiv_class", "entry_date",
             "keyword_schema"
         ]
 
@@ -142,11 +152,11 @@ class Paper(models.Model):
         self.arxiv_class = paper.arxiv_class[0]
 
         super(Paper, self).save(*args, **kwargs)
-        for author_name, o1, o3, aff in zip(
+        for author_name, o1, o2, o3, aff in zip(*fix_none_for_zip(
                 paper.author,
-                paper.orcid_pub, paper.orcid_other,
+                paper.orcid_pub, paper.orcid_user, paper.orcid_other,
                 paper.aff
-        ):
+        )):
             orcid_id = merge_fields(o1, o3)
             if orcid_id:
                 try:
