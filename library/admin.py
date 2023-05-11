@@ -29,7 +29,7 @@ class PaperAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
     readonly_fields = ["title", "first_author", "authors", "doi", "pubdate", "entry_date", "keywords", "publication",
                        "doctype", "arxiv_id", "year", "citation_count", "abstract"]
     date_hierarchy = "entry_date"
-    list_filter = ["authors", "publication", "year", "tags", "keywords", "doctype"]
+    list_filter = ["doctype","arxiv_class", "authors", "publication", "year", "tags", "keywords"]
     list_display = ["title", "first_author", "custom_title"]
     search_fields = ["@abstract"]
     filter_horizontal = ["tags", "recommended_by", "keywords", "authors"]

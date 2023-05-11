@@ -10,6 +10,10 @@ class Author(models.Model):
     def __str__(self):
         return self.pretty_name if self.pretty_name else self.name
 
+    def get_absolute_url(self):
+        if self.orcid_id:
+            return f"https://orcid.org/{self.orcid_id}"
+        return f"https://ui.adsabs.harvard.edu/search/q=%20author%3A%22{self.name}%22"
+
     class Meta:
         ordering = ["name"]
-

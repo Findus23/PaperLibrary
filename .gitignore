@@ -3,3 +3,4 @@ oldcode/
 __pycache__/
 media/
 paperlibrary/secrets.py
+backup.json

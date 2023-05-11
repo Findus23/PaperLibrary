@@ -28,6 +28,12 @@ def valid_bibtex_key(key: str) -> None:
             raise ValidationError(f"key is not allowed to contain {character}")
 
 
+def merge_fields(*args):
+    for value in args:
+        if value != "-":
+            return value
+
+
 class Paper(models.Model):
     title = models.CharField(max_length=1000)
     abstract = models.TextField()
@@ -39,6 +45,7 @@ class Paper(models.Model):
     publication = models.ForeignKey(Publication, on_delete=models.CASCADE)
     doctype = models.ForeignKey(DocType, on_delete=models.CASCADE)
     arxiv_id = models.CharField(unique=True, max_length=10, blank=True, null=True)
+    arxiv_class = models.CharField(null=True)
     year = models.IntegerField()
     pubdate = models.DateField()
     entry_date = models.DateField()
@@ -50,6 +57,7 @@ class Paper(models.Model):
     recommended_by = models.ManyToManyField(Author, related_name="recommendations", blank=True)
     tags = models.ManyToManyField(Tag, related_name="notes", blank=True)
     citation_key = models.CharField(max_length=50, unique=True, blank=True, null=True, validators=[valid_bibtex_key])
+    ads_version = models.PositiveBigIntegerField()
 
     class Meta:
         ordering = ["title"]
@@ -74,11 +82,16 @@ class Paper(models.Model):
         return f"https://ui.adsabs.harvard.edu/abs/{self.bibcode}/abstract"
 
     def save(self, *args, **kwargs):
+        ads.config.token = ADS_AUTH_TOKEN
         if self.citation_key:
             regex = r"(@\w+{)(\S+),"
             self.bibtex = re.sub(regex, f"\\1{self.citation_key},", self.bibtex, 1)
         if self.id:
-            return super(Paper, self).save(*args, **kwargs)
+            papers = ads.SearchQuery(bibcode=self.bibcode, fl=["_version_"])
+            paper: Article = next(papers)
+            if self.ads_version==paper._raw["_version_"]:
+                return super(Paper, self).save(*args, **kwargs)
+
         if not self.bibcode:
             otherpublication, _ = Publication.objects.get_or_create(name="other")
             self.publication = otherpublication
@@ -91,15 +104,19 @@ class Paper(models.Model):
             self.first_author = otherauthor
             return super(Paper, self).save(*args, **kwargs)
 
-        ads.config.token = ADS_AUTH_TOKEN
         cols = [
             "title", "author", "first_author", "year", "bibcode", "id", "pubdate", "doi",
-            "identifier", "pub", "citation_count", "abstract", "bibtex", "doctype", "keyword"
+            "identifier", "pub", "citation_count", "abstract", "bibtex", "doctype", "keyword",
+            "orcid_pub", "orcid_user", "orcid_other", "aff", "_version_", "arxiv_class","entry_date",
+            "keyword_schema"
         ]
 
         print(self.bibcode)
         papers = ads.SearchQuery(bibcode=self.bibcode, fl=cols)
         paper: Article = next(papers)
+
+        self.ads_version = paper._raw["_version_"]
+
         self.title = paper.title[0]
         self.publication, _ = Publication.objects.get_or_create(name=paper.pub)
         self.abstract = paper.abstract
@@ -122,10 +139,26 @@ class Paper(models.Model):
             self.arxiv_id = arxiv_papers[0].split("arXiv:")[-1]
         else:
             self.arxiv_id = None
+        self.arxiv_class = paper.arxiv_class[0]
 
         super(Paper, self).save(*args, **kwargs)
-        for author_name in paper.author:
-            author = get_or_create_author(name=author_name)
+        for author_name, o1, o3, aff in zip(
+                paper.author,
+                paper.orcid_pub, paper.orcid_other,
+                paper.aff
+        ):
+            orcid_id = merge_fields(o1, o3)
+            if orcid_id:
+                try:
+                    author = Author.objects.get(orcid_id=orcid_id)
+                except Author.DoesNotExist:
+                    author = get_or_create_author(name=author_name)
+                    author.orcid_id = orcid_id
+                    author.save()
+            else:
+                author = get_or_create_author(name=author_name)
+            author.affiliation = aff
+            author.save()
             self.authors.add(author)
 
         for kw in zip(paper.keyword, paper._get_field("keyword_schema")):
