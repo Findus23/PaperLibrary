@@ -152,7 +152,6 @@ class Paper(models.Model):
         self.arxiv_class = paper.arxiv_class[0]
 
         super(Paper, self).save(*args, **kwargs)
-        self.authors.clear()
         for author_name, o1, o2, o3, aff in zip(*fix_none_for_zip(
                 paper.author,
                 paper.orcid_pub, paper.orcid_user, paper.orcid_other,
@@ -171,7 +170,6 @@ class Paper(models.Model):
             author.affiliation = aff
             author.save()
             self.authors.add(author)
-        self.keywords.clear()
         for kw in zip(paper.keyword, paper._get_field("keyword_schema")):
             keyword_name, keyword_schema = kw
             keyword, created = Keyword.objects.get_or_create(
