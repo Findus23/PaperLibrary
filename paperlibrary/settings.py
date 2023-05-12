@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'rest_framework',
     "rest_framework.authtoken",
-    'django_rq'
+    'django_rq',
+    'django_unused_media'
 ]
 
 MIDDLEWARE = [
