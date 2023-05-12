@@ -49,6 +49,7 @@ class PaperSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()
     notes_md = serializers.CharField(source='note.text_md')
     notes_html = serializers.CharField(source='note.text_html')
+    notes_updated_at = serializers.DateTimeField(source='note.updated_at')
 
     class Meta:
         model = Paper

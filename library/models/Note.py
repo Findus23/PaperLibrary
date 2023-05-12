@@ -7,6 +7,7 @@ class Note(models.Model):
     text_md = models.TextField(blank=True)
     text_html = models.TextField(editable=False, blank=True)  # TODO: support HTML
     paper = models.OneToOneField(Paper, on_delete=models.CASCADE, primary_key=True, related_name="note")
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.text_md[:20]
