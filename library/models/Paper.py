@@ -94,7 +94,9 @@ class Paper(models.Model):
         if self.citation_key:
             regex = r"(@\w+{)(\S+),"
             self.bibtex = re.sub(regex, f"\\1{self.citation_key},", self.bibtex, 1)
+        insert = True
         if self.id:
+            insert = False
             papers = ads.SearchQuery(bibcode=self.bibcode, fl=["_version_"])
             paper: Article = next(papers)
             if self.ads_version == paper._raw["_version_"]:
@@ -174,6 +176,6 @@ class Paper(models.Model):
                 name__iexact=keyword_name, kw_schema=keyword_schema, defaults={"name": keyword_name}
             )
             self.keywords.add(keyword)
-        if not self.id:
+        if insert:
             queue = django_rq.get_queue()
             queue.enqueue("library.tasks.fetch_pdfs")
