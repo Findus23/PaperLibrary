@@ -16,11 +16,12 @@ class SimplePaperSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Paper
-        fields = ["url", "title", "custom_title", "pdfs", "doi"]
+        fields = ["id", "url", "title", "custom_title", "pdfs", "doi"]
 
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     papers = SimplePaperSerializer(many=True)
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Author
@@ -29,6 +30,7 @@ class AuthorSerializer(serializers.HyperlinkedModelSerializer):
 
 class KeywordSerializer(serializers.HyperlinkedModelSerializer):
     papers = SimplePaperSerializer(many=True)
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Keyword
@@ -44,6 +46,7 @@ class PaperSerializer(serializers.HyperlinkedModelSerializer):
     tags = serializers.SlugRelatedField("name", many=True, queryset=Tag.objects.all())
     recommended_by = serializers.SlugRelatedField("name", many=True, queryset=Author.objects.all())
     pdfs = PDFSerializer(many=True)
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Paper
