@@ -45,6 +45,7 @@ def create_preview(pdf: PDF, width=1000) -> None:
             img.save(tf)
             preview = File(tf)
             pdf.preview.save(f"{pdf.paper.arxiv_id}.png", preview)
+            run(["optipng", pdf.preview.path])
 
 
 def pdf_to_text(pdf: PDF) -> None:
