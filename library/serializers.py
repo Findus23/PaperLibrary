@@ -57,7 +57,7 @@ class PaperSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class NoteSerializer(serializers.ModelSerializer):
-    text_md = serializers.CharField(trim_whitespace=False)
+    text_md = serializers.CharField(trim_whitespace=False,allow_blank=True)
 
     class Meta:
         model = Note
