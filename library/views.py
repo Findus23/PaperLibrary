@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view
 
-from library.models import Paper, Author, Keyword, PDF
-from library.serializers import PaperSerializer, AuthorSerializer, PDFSerializer, KeywordSerializer
+from library.models import Paper, Author, Keyword, PDF, Note
+from library.serializers import PaperSerializer, AuthorSerializer, PDFSerializer, KeywordSerializer, NoteSerializer
 
 
 class PaperViewSet(viewsets.ModelViewSet):
@@ -31,6 +31,12 @@ class KeywordViewSet(viewsets.ModelViewSet):
 class PDFViewSet(viewsets.ModelViewSet):
     queryset = PDF.objects.all()
     serializer_class = PDFSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class NoteViewSet(viewsets.ModelViewSet):
+    queryset = Note.objects.all()
+    serializer_class = NoteSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

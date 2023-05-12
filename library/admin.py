@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.forms import ModelForm
 from djangoql.admin import DjangoQLSearchMixin
 
-from library.models import Paper, Author, Keyword, PDF, Tag, AuthorAlias, Publication, DocType
+from library.models import Paper, Author, Keyword, PDF, Tag, AuthorAlias, Publication, DocType, Note
 
 
 class AddPaperForm(ModelForm):
@@ -17,24 +17,26 @@ class PDFInlineAdmin(admin.TabularInline):
     extra = 0
 
 
+class NoteInline(admin.StackedInline):
+    model = Note
+
+
 class PaperAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
     # form = AddPaperForm
     fields = ["bibcode", "title", "custom_title", "first_author", "authors", "year",
-              "citation_key",
-              "notes_md", "tags",
-              "doi", "pubdate", "entry_date", "keywords",
-              "publication",
+              "citation_key", "tags",
+              "doi", "pubdate", "entry_date", "keywords", "publication",
               "doctype", "arxiv_id", "citation_count", "abstract", "recommended_by",
               "bibtex"]
     readonly_fields = ["title", "first_author", "authors", "doi", "pubdate", "entry_date", "keywords", "publication",
                        "doctype", "arxiv_id", "year", "citation_count", "abstract"]
     date_hierarchy = "entry_date"
-    list_filter = ["doctype","arxiv_class", "authors", "publication", "year", "tags", "keywords"]
+    list_filter = ["doctype", "arxiv_class", "authors", "publication", "year", "tags", "keywords"]
     list_display = ["title", "first_author", "custom_title"]
     search_fields = ["@abstract"]
     filter_horizontal = ["tags", "recommended_by", "keywords", "authors"]
     save_on_top = True
-    inlines = [PDFInlineAdmin]
+    inlines = [PDFInlineAdmin, NoteInline]
 
     def get_readonly_fields(self, request, obj=None):
         if not obj:  # editing an existing object

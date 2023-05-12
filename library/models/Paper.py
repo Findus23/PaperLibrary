@@ -62,8 +62,6 @@ class Paper(models.Model):
     citation_count = models.IntegerField(null=True, blank=True)
     keywords = models.ManyToManyField(Keyword, related_name="papers")
     custom_title = models.CharField(max_length=1000, blank=True)
-    notes_md = models.TextField(blank=True)
-    notes_html = models.TextField(editable=False, blank=True)  # TODO: support HTML
     recommended_by = models.ManyToManyField(Author, related_name="recommendations", blank=True)
     tags = models.ManyToManyField(Tag, related_name="notes", blank=True)
     citation_key = models.CharField(max_length=50, unique=True, blank=True, null=True, validators=[valid_bibtex_key])
