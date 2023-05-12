@@ -9,21 +9,21 @@ from library.serializers import PaperSerializer, AuthorSerializer, PDFSerializer
 
 class PaperViewSet(viewsets.ModelViewSet):
     queryset = Paper.objects.all().select_related("first_author") \
-        .select_related("publication").select_related("doctype") \
-        .prefetch_related("pdfs").prefetch_related("authors") \
-        .prefetch_related("keywords")
+        .select_related("publication").select_related("doctype").select_related("note") \
+        .prefetch_related("pdfs").prefetch_related("authors").prefetch_related("tags") \
+        .prefetch_related("keywords").prefetch_related("recommended_by")
     serializer_class = PaperSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
-    queryset = Author.objects.all()
+    queryset = Author.objects.all().prefetch_related("papers").prefetch_related("papers__pdfs")
     serializer_class = AuthorSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class KeywordViewSet(viewsets.ModelViewSet):
-    queryset = Keyword.objects.all()
+    queryset = Keyword.objects.all().prefetch_related("papers").prefetch_related("papers__pdfs")
     serializer_class = KeywordSerializer
     permission_classes = [permissions.IsAuthenticated]
 
