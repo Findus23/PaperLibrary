@@ -36,11 +36,11 @@ def fetch_arxiv_pdf(paper: Paper) -> None:
 
 
 def create_preview(pdf: PDF, width=1000) -> None:
-    with Image(filename=f"pdf:{pdf.file.path}[0]") as img:
+    with Image(filename=f"pdf:{pdf.file.path}[0]", resolution=200) as img:
         img.trim(fuzz=0.2)
         img.format = "png"
-        new_height = width / img.width * img.height
-        img.thumbnail(width=width, height=int(new_height))
+        # new_height = width / img.width * img.height
+        # img.thumbnail(width=width, height=int(new_height))
         with TemporaryFile("rb+") as tf:
             img.save(tf)
             preview = File(tf)
