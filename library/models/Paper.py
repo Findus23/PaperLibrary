@@ -173,7 +173,7 @@ class Paper(models.Model):
         for kw in zip(paper.keyword, paper._get_field("keyword_schema")):
             keyword_name, keyword_schema = kw
             keyword, created = Keyword.objects.get_or_create(
-                name__iexact=keyword_name, kw_schema=keyword_schema, defaults={"name": keyword_name}
+                name=keyword_name, kw_schema=keyword_schema, defaults={"name": keyword_name}
             )
             self.keywords.add(keyword)
         if insert:
