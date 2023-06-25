@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Keyword(models.Model):
-    name = models.CharField(unique=True, max_length=1000)
+    name = models.CharField(max_length=1000)
     kw_schema = models.CharField(max_length=1000)
 
     def __str__(self):
