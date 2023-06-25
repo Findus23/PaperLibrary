@@ -10,3 +10,4 @@ class Keyword(models.Model):
 
     class Meta:
         ordering = ["name"]
+        unique_together = [["name", "kw_schema"]]
