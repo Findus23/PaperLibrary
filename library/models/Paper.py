@@ -54,7 +54,7 @@ class Paper(models.Model):
     authors = models.ManyToManyField(Author, related_name="papers")
     publication = models.ForeignKey(Publication, on_delete=models.CASCADE)
     doctype = models.ForeignKey(DocType, on_delete=models.CASCADE)
-    arxiv_id = models.CharField(unique=True, max_length=10, blank=True, null=True)
+    arxiv_id = models.CharField(unique=True, max_length=20, blank=True, null=True)
     arxiv_class = models.CharField(null=True)
     year = models.IntegerField()
     pubdate = models.DateField()
