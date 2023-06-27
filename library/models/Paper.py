@@ -171,12 +171,13 @@ class Paper(models.Model):
             author.affiliation = aff
             author.save()
             self.authors.add(author)
-        for kw in zip(paper.keyword, paper._get_field("keyword_schema")):
-            keyword_name, keyword_schema = kw
-            keyword, created = Keyword.objects.get_or_create(
-                name=keyword_name, kw_schema=keyword_schema, defaults={"name": keyword_name}
-            )
-            self.keywords.add(keyword)
+        if paper._get_field("keyword_schema"):
+            for kw in zip(paper.keyword, paper._get_field("keyword_schema")):
+                keyword_name, keyword_schema = kw
+                keyword, created = Keyword.objects.get_or_create(
+                    name=keyword_name, kw_schema=keyword_schema, defaults={"name": keyword_name}
+                )
+                self.keywords.add(keyword)
         if insert:
             queue = django_rq.get_queue()
             queue.enqueue("library.tasks.fetch_pdfs")
