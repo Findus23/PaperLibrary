@@ -149,7 +149,8 @@ class Paper(models.Model):
             self.arxiv_id = arxiv_papers[0].split("arXiv:")[-1]
         else:
             self.arxiv_id = None
-        self.arxiv_class = paper.arxiv_class[0]
+        if paper.arxiv_class:
+            self.arxiv_class = paper.arxiv_class[0]
 
         super(Paper, self).save(*args, **kwargs)
         for author_name, o1, o2, o3, aff in zip(*fix_none_for_zip(
