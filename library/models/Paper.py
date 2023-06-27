@@ -46,7 +46,7 @@ def fix_none_for_zip(*args):
 
 class Paper(models.Model):
     title = models.CharField(max_length=1000)
-    abstract = models.TextField()
+    abstract = models.TextField(null=True)
     bibcode = models.CharField(unique=True, max_length=50, null=True, blank=True)
     doi = models.CharField(unique=True, max_length=50, null=True)
     bibtex = models.TextField(blank=True)
