@@ -1,5 +1,5 @@
 # Create your views here.
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view
 
@@ -41,9 +41,15 @@ class NoteViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['GET'])
-def bibtex(request):
+def bibtex(request: HttpRequest):
+    tag = request.GET.get("tag", None)
+    if tag:
+        query = Paper.objects.filter(tags__name=tag)
+    else:
+        query = Paper.objects.all()
+
     code = "% Encoding: UTF-8\n\n"
-    for paper in Paper.objects.all().order_by("citation_key"):
+    for paper in query.order_by("citation_key"):
         code += paper.bibtex + "\n\n"
 
     code += "@Comment{jabref-meta: databaseType:biblatex;}\n"
