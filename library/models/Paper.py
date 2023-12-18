@@ -133,7 +133,7 @@ class Paper(models.Model):
         bibtex_query = ads.ExportQuery(self.bibcode)
         self.bibtex = bibtex_query.execute()
         self.year = int(paper.year)
-        self.entry_date = paper._get_field("entry_date").replace("T00:00:00Z", "")
+        self.entry_date = paper._get_field("entry_date").split("T")[0]
         self.citation_count = int(paper.citation_count)
         self.doctype, _ = DocType.objects.get_or_create(name=paper.doctype)
         self.first_author = get_or_create_author(name=paper.first_author)
