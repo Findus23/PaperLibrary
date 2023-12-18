@@ -31,8 +31,11 @@ class PaperAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
     readonly_fields = ["title", "first_author", "authors", "doi", "pubdate", "entry_date", "keywords", "publication",
                        "doctype", "arxiv_id", "year", "citation_count", "abstract"]
     date_hierarchy = "entry_date"
-    list_filter = ["doctype", "arxiv_class", "authors", "publication", "year", "tags", "keywords"]
-    list_display = ["title", "first_author", "custom_title"]
+    list_filter = ["tags", "doctype", "arxiv_class", "publication", "year",
+                   ("pdfs", admin.EmptyFieldListFilter), ("arxiv_id", admin.EmptyFieldListFilter),
+                   ("doi", admin.EmptyFieldListFilter),
+                   "keywords", "authors"]
+    list_display = ["title", "first_author", "citation_key"]
     search_fields = ["@abstract"]
     filter_horizontal = ["tags", "recommended_by", "keywords", "authors"]
     save_on_top = True
@@ -48,14 +51,33 @@ class PaperAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
 
 class PDFAdmin(admin.ModelAdmin):
     search_fields = ["@full_text"]
+    list_filter = ["type", ("preview", admin.EmptyFieldListFilter), ("full_text", admin.EmptyFieldListFilter)]
+    date_hierarchy = "updated_at"
+    readonly_fields = ["updated_at", "sha256"]
+
+
+class AuthorAdmin(admin.ModelAdmin):
+    list_filter = [("affiliation", admin.EmptyFieldListFilter), ("orcid_id", admin.EmptyFieldListFilter), "affiliation"]
+
+
+class KeywordAdmin(admin.ModelAdmin):
+    list_filter = ["kw_schema"]
+
+
+class AuthorAliasAdmin(admin.ModelAdmin):
+    list_display = ["name", "author"]
+
+
+class TagAdmin(admin.ModelAdmin):
+    list_display = ["name", "slug"]
 
 
 admin.site.register(Paper, PaperAdmin)
 # admin.site.register(Note, NoteAdmin)
-admin.site.register(Author)
-admin.site.register(AuthorAlias)
-admin.site.register(Keyword)
-admin.site.register(Tag)
+admin.site.register(Author, AuthorAdmin)
+admin.site.register(AuthorAlias, AuthorAliasAdmin)
+admin.site.register(Keyword, KeywordAdmin)
+admin.site.register(Tag, TagAdmin)
 admin.site.register(Publication)
 admin.site.register(DocType)
 admin.site.register(PDF, PDFAdmin)
