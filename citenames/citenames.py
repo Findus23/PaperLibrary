@@ -3,10 +3,8 @@ import subprocess
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-keys = ["bacco-lagrangian-bias", "DiffEinsteinBoltzmann"]
 current_dir = Path(__file__).parent
 aas_file = current_dir / "aas_macros.sty"
-bibtex_test = (Path(__file__).parent.parent / "bibtex.bib").read_text()
 tex_template_file = (current_dir / "cite.tex")
 
 
@@ -50,7 +48,3 @@ def run_tex(bibtex: str, keys: list[str]):
 
         assert len(citenames) == len(keys)
         return dict(zip(keys, citenames))
-
-
-if __name__ == "__main__":
-    run_tex(bibtex_test, keys)
