@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 
 from library.models import Paper, Author, Keyword, PDF, Note
 from library.serializers import PaperSerializer, AuthorSerializer, PDFSerializer, KeywordSerializer, NoteSerializer
+from library.utils.bibtex import papers_to_bibtex_file
 
 
 class PaperViewSet(viewsets.ModelViewSet):
@@ -48,9 +49,5 @@ def bibtex(request: HttpRequest):
     else:
         query = Paper.objects.all()
 
-    code = "% Encoding: UTF-8\n\n"
-    for paper in query.order_by("citation_key"):
-        code += paper.bibtex + "\n\n"
-
-    code += "@Comment{jabref-meta: databaseType:biblatex;}\n"
+    code = papers_to_bibtex_file(query)
     return HttpResponse(code, content_type="text/plain")

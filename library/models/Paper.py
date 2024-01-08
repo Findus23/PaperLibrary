@@ -66,6 +66,7 @@ class Paper(models.Model):
     tags = models.ManyToManyField(Tag, related_name="notes", blank=True)
     citation_key = models.CharField(max_length=50, unique=True, blank=True, null=True, validators=[valid_bibtex_key])
     ads_version = models.PositiveBigIntegerField()
+    citename = models.CharField(max_length=1000, blank=True, null=True, editable=False)
 
     class Meta:
         ordering = ["title"]

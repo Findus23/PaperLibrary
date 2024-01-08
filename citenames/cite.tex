@@ -1,0 +1,28 @@
+\documentclass[5pt,a4paper]{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\pagenumbering{gobble}
+\usepackage{aas_macros}
+
+\usepackage[
+backend=biber,
+style=authoryear-comp, % choose a style from https://de.overleaf.com/learn/latex/Biblatex_citation_styles
+%sortlocale=de_AT,
+sortlocale=en_GB,
+giveninits=true,
+sortcites=false,
+% backref=true, % use if you like it -- puts a link to the page where it is cited into the bibliography
+]{biblatex}
+
+\addbibresource{bibtex.bib}
+\begin{document}
+	\section*{=======}
+	
+	\cite{bacco-lagrangian-bias}
+	
+		\section*{=======}
+	
+	\cite{2011EPJP..126...55D}
+	
+
+\end{document}

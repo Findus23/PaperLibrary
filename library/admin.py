@@ -23,19 +23,20 @@ class NoteInline(admin.StackedInline):
 
 class PaperAdmin(DjangoQLSearchMixin, admin.ModelAdmin):
     # form = AddPaperForm
-    fields = ["bibcode", "title", "custom_title", "first_author", "authors", "year",
+    fields = ["bibcode", "title", "citename", "custom_title", "first_author", "authors", "year",
               "citation_key", "tags",
               "doi", "pubdate", "entry_date", "keywords", "publication",
               "doctype", "arxiv_id", "citation_count", "abstract", "recommended_by",
               "bibtex"]
-    readonly_fields = ["title", "first_author", "authors", "doi", "pubdate", "entry_date", "keywords", "publication",
+    readonly_fields = ["title", "citename", "first_author", "authors", "doi", "pubdate", "entry_date", "keywords",
+                       "publication",
                        "doctype", "arxiv_id", "year", "citation_count", "abstract"]
     date_hierarchy = "entry_date"
     list_filter = ["tags", "doctype", "arxiv_class", "publication", "year",
                    ("pdfs", admin.EmptyFieldListFilter), ("arxiv_id", admin.EmptyFieldListFilter),
                    ("doi", admin.EmptyFieldListFilter),
                    "keywords", "authors"]
-    list_display = ["title", "first_author", "citation_key"]
+    list_display = ["title", "citename", "citation_key"]
     search_fields = ["@abstract"]
     filter_horizontal = ["tags", "recommended_by", "keywords", "authors"]
     save_on_top = True

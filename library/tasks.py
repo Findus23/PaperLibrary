@@ -1,6 +1,9 @@
+from django.db import transaction
 from django_rq import job
 
+from citenames.citenames import run_tex
 from library.models import PDF, Paper
+from library.utils.bibtex import papers_to_bibtex_file
 from library.utils.pdf import create_preview, pdf_to_text, fetch_arxiv_pdf
 
 
@@ -27,3 +30,19 @@ def fetch_pdfs():
             continue
         fetch_arxiv_pdf(paper)
     extract_fulltext.delay()
+
+
+@job
+def update_citenames():
+    query = Paper.objects.all()
+
+    bibtex = papers_to_bibtex_file(query)
+    with_key_query = query.exclude(citation_key__isnull=True)
+    keys = list(with_key_query.values_list('citation_key', flat=True))
+    citenames = run_tex(bibtex, keys)
+    with transaction.atomic():
+        updated_papers = []
+        for paper in with_key_query:
+            paper.citename = citenames[paper.citation_key]
+            updated_papers.append(paper)
+        Paper.objects.bulk_update(updated_papers, ["citename"])
