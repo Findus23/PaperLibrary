@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from library.tasks import extract_fulltext, update_citenames
+from library.tasks import update_citenames
 
 
 class Command(BaseCommand):
