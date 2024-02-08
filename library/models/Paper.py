@@ -99,7 +99,7 @@ class Paper(models.Model):
     def save(self, *args, **kwargs):
         ads.config.token = ADS_AUTH_TOKEN
         bibtex_regex = re.compile(r"(@\w+{)(\S+),")
-        self.bibtex = re.sub(bibtex_regex, f"\\1{self.citation_key_or_pk},", self.bibtex, 1)
+        self.bibtex = bibtex_regex.sub(f"\\g<1>{self.citation_key_or_pk},", self.bibtex, 1)
         insert = True
         if self.id:
             insert = False
@@ -138,7 +138,7 @@ class Paper(models.Model):
         self.abstract = paper.abstract
         bibtex_query = ads.ExportQuery(self.bibcode)
         self.bibtex = bibtex_query.execute()
-        self.bibtex = re.sub(bibtex_regex, f"\\1{self.citation_key_or_pk},", self.bibtex, 1)
+        self.bibtex = bibtex_regex.sub(f"\\g<1>{self.citation_key_or_pk},", self.bibtex, 1)
         self.year = int(paper.year)
         self.entry_date = paper._get_field("entry_date").split("T")[0]
         self.citation_count = int(paper.citation_count)
