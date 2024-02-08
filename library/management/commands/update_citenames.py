@@ -7,4 +7,4 @@ class Command(BaseCommand):
     help = 'updates all citenames'
 
     def handle(self, *args, **options):
-        update_citenames.delay()
+        update_citenames()

@@ -40,15 +40,15 @@ def update_citenames():
     with_key_query = query.exclude(bibcode__isnull=True)
     keys = []
 
-    for citekey, bibcode in with_key_query.values_list('citation_key', 'bibcode'):
+    for citekey, pk in with_key_query.values_list('citation_key', 'pk'):
         if citekey is None:
-            keys.append(bibcode)
+            keys.append(pk)
             continue
         keys.append(citekey)
     citenames = run_tex(bibtex, keys)
     with transaction.atomic():
         updated_papers = []
         for paper in with_key_query:
-            paper.citename = citenames[paper.citation_key_or_bibcode]
+            paper.citename = citenames[paper.citation_key_or_pk]
             updated_papers.append(paper)
         Paper.objects.bulk_update(updated_papers, ["citename"])
