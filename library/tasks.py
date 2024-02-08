@@ -37,7 +37,7 @@ def update_citenames():
     query = Paper.objects.all()
 
     bibtex = papers_to_bibtex_file(query)
-    with_key_query = query.exclude(citation_key__isnull=True)
+    with_key_query = query.exclude(bibcode__isnull=True)
     keys = list(with_key_query.values_list('citation_key', flat=True))
     citenames = run_tex(bibtex, keys)
     with transaction.atomic():
