@@ -1,7 +1,9 @@
 import re
+from urllib.parse import unquote
 
 import ads
 import django_rq
+import requests
 from ads.search import Article
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -104,7 +106,21 @@ class Paper(models.Model):
         if self.id:
             insert = False
             papers = ads.SearchQuery(bibcode=self.bibcode, fl=["_version_"])
-            paper: Article = next(papers)
+            print(papers)
+            try:
+                paper: Article = next(papers)
+            except StopIteration:
+                r = requests.get(f"https://ui.adsabs.harvard.edu/abs/{self.bibcode}/abstract", allow_redirects=False)
+                print(r.url)
+                print(r.status_code)
+                if r.status_code != 301:
+                    raise
+                new_bibcode = r.headers['Location'].split("/")[-2]
+                new_bibcode = unquote(new_bibcode)
+                old_bibcode = self.bibcode
+                self.bibcode = new_bibcode
+                return super(Paper, self).save(*args, **kwargs)
+
             if self.ads_version == paper._raw["_version_"]:
                 return super(Paper, self).save(*args, **kwargs)
 
