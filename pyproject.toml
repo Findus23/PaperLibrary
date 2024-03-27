@@ -8,18 +8,18 @@ authors = ["Lukas Winkler <git@lw1.at>"]
 python = "^3.11"
 django = "^5.0"
 ads = "^0.12.3"
-djangoql = "^0.17.0"
+djangoql = "^0.18.1"
 alive-progress = "^3.1.2"
 Wand = "^0.6.3"
 psycopg2 = "^2.8.6"
 django-debug-toolbar = "^4.0.0"
-djangorestframework = {git = "https://github.com/encode/django-rest-framework.git"}
 gunicorn = "^21.2.0"
 setproctitle = "^1.2.2"
 redis = "^5.0.1"
 rq = "^1.10.1"
 django-rq = "^2.5.1"
 django-unused-media = "^0.2.2"
+djangorestframework = "^3.15.1"
 
 [tool.poetry.dev-dependencies]
 
