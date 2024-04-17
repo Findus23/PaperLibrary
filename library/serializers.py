@@ -47,6 +47,8 @@ class PaperSerializer(serializers.HyperlinkedModelSerializer):
     recommended_by = serializers.SlugRelatedField("name", many=True, queryset=Author.objects.all())
     pdfs = PDFSerializer(many=True)
     id = serializers.ReadOnlyField()
+    ads_version = serializers.ReadOnlyField()
+    citename = serializers.ReadOnlyField()
     notes_md = serializers.CharField(source='note.text_md')
     notes_html = serializers.CharField(source='note.text_html')
     notes_updated_at = serializers.DateTimeField(source='note.updated_at')

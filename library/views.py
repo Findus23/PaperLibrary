@@ -1,4 +1,5 @@
 # Create your views here.
+from django.db.models import Prefetch
 from django.http import HttpResponse, HttpRequest
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view
@@ -9,16 +10,30 @@ from library.utils.bibtex import papers_to_bibtex_file
 
 
 class PaperViewSet(viewsets.ModelViewSet):
-    queryset = Paper.objects.all().select_related("first_author") \
-        .select_related("publication").select_related("doctype").select_related("note") \
-        .prefetch_related("pdfs").prefetch_related("authors").prefetch_related("tags") \
-        .prefetch_related("keywords").prefetch_related("recommended_by")
+    queryset = (Paper.objects.all()
+                .select_related("first_author")
+                .select_related("publication")
+                .select_related("doctype")
+                .select_related("note")
+                .prefetch_related("pdfs")
+                .prefetch_related("authors")
+                .prefetch_related("tags")
+                .prefetch_related("keywords")
+                .prefetch_related("recommended_by")
+                )
     serializer_class = PaperSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
-    queryset = Author.objects.all().prefetch_related("papers").prefetch_related("papers__pdfs")
+    queryset = (Author.objects.all()
+    .prefetch_related(Prefetch(
+        "papers", queryset=Paper.objects.defer("abstract", "bibtex")
+    ))
+    .prefetch_related(Prefetch(
+        "papers__pdfs", queryset=PDF.objects.defer("full_text")
+    ))
+    )
     serializer_class = AuthorSerializer
     permission_classes = [permissions.IsAuthenticated]
 
