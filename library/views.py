@@ -2,7 +2,8 @@
 from django.db.models import Prefetch
 from django.http import HttpResponse, HttpRequest
 from rest_framework import viewsets, permissions
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 
 from library.models import Paper, Author, Keyword, PDF, Note
 from library.serializers import PaperSerializer, AuthorSerializer, PDFSerializer, KeywordSerializer, NoteSerializer
@@ -57,6 +58,7 @@ class NoteViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
 def bibtex(request: HttpRequest):
     tag = request.GET.get("tag", None)
     if tag:
